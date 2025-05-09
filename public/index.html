@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAdhar Image Uploader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #upload-form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #preview {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            display: none;
+        }
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Aadhar Image Uploader</h2>
+
+    <form id="upload-form">
+        <input type="file" id="fileInput" accept="image/png, image/jpeg" required>
+        <br>
+        <button type="button" onclick="uploadFile()">Upload</button>
+    </form>
+
+    <p id="message"></p>
+    <img id="preview" alt="Uploaded Image Preview">
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById("fileInput");
+            const message = document.getElementById("message");
+            const preview = document.getElementById("preview");
+
+            if (!fileInput.files.length) {
+                message.style.color = "red";
+                message.textContent = "Please select a file!";
+                return;
+            }
+
+            let file = fileInput.files[0];
+            let formData = new FormData();
+            formData.append("aadharImage", file);
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    message.style.color = "red";
+                    message.textContent = data.error;
+                } else {
+                    message.style.color = "green";
+                    message.textContent = "Upload successful!";
+
+                    // Show preview
+                    preview.src = `/uploads/${data.filename}`;
+                    preview.style.display = "block";
+                }
+            })
+            .catch(error => {
+                message.style.color = "red";
+                message.textContent = "Error uploading file!";
+                console.error(error);
+            });
+        }
+    </script>
+
+</body>
+</html>

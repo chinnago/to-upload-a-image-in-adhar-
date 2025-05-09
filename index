@@ -1,0 +1,28 @@
+const express = require('express');
+const app = express();
+const PORT = 3000;
+
+// Middleware to parse incoming requests
+app.use(express.json());
+
+// Example route for handling GET requests
+app.get('/', (req, res) => {
+    res.send('Welcome to the Node.js server!');
+});
+
+// Example route simulating an async operation
+app.get('/data', async (req, res) => {
+    try {
+        // Simulate a delay for async task
+        setTimeout(() => {
+            res.json({ message: 'Data fetched successfully after delay!' });
+        }, 2000);  // Delay 2 seconds
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch data' });
+    }
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
